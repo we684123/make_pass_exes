@@ -8,15 +8,16 @@ fi
 # 將 file_list.txt 中的檔案名讀入陣列 current_files
 current_files=()
 while IFS= read -r line; do
-    current_files+=("$line.exe")
+    current_files+=("$line")
 done < file_list.txt
 
-# 刪除不在 file_list.txt 中的 exe 檔案
-for exe_file in output_pass_exes/*.exe; do
-    # 檢查是否有 exe 檔案存在
-    [ -e "$exe_file" ] || continue
+# 刪除不在 file_list.txt 中的檔案
+for file in output_pass_exes/*; do
+    # 檢查是否有檔案存在
+    [ -e "$file" ] || continue
+    [ -f "$file" ] || continue
     
-    file_name=$(basename "$exe_file")
+    file_name=$(basename "$file")
     found=false
     
     for current_file in "${current_files[@]}"; do
@@ -27,15 +28,16 @@ for exe_file in output_pass_exes/*.exe; do
     done
     
     if [ "$found" = false ]; then
-        rm "$exe_file"
+        rm "$file"
         echo "Deleted: $file_name"
     fi
 done
 
-# 生成 file_list.txt 中不存在的 exe 檔案
+# 生成 file_list.txt 中不存在的檔案
 while IFS= read -r file_name; do
-    if [ ! -f "output_pass_exes/${file_name}.exe" ]; then
-        gcc -O3 -o "output_pass_exes/${file_name}.exe" empty_program.c
-        echo "Generated: ${file_name}.exe"
+    if [ ! -f "output_pass_exes/${file_name}" ]; then
+        gcc -O3 -o "output_pass_exes/${file_name}" empty_program.c
+        chmod +x "output_pass_exes/${file_name}"
+        echo "Generated: ${file_name}"
     fi
 done < file_list.txt
