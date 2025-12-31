@@ -18,6 +18,10 @@ git clone
 cd make_pass_exes
 ```
 
+```bash
+cp .example.file_list.txt file_list.txt
+```
+
 ### Usage
 
 ```bash
